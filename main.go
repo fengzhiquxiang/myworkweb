@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"gopkg.in/mgo.v2"
 )
 
 type custom struct {
@@ -33,8 +35,27 @@ func main() {
 		tpl.ExecuteTemplate(w, "index.gohtml", nil)
 	})
 
-	http.HandleFunc("/submit_input_data", func(w http.ResponseWriter, r *http.Request) {
-		tpl.ExecuteTemplate(w, "index.gohtml", "jquery ajax data back!!")
+	http.HandleFunc("/add_custom", func(w http.ResponseWriter, r *http.Request) {
+		// tpl.ExecuteTemplate(w, "index.gohtml", "jquery ajax data back!!")
+		// fmt.Println(r.FormValue("id"))
+		fmt.Println(r.FormValue("firstname"))
+		fmt.Println(r.FormValue("lastname"))
+		fmt.Println(r.FormValue("phone"))
+		fmt.Println(r.FormValue("email"))
+
+		// Connect to our local mongo
+		mgd, err := mgo.Dial("mongodb://localhost")
+		if err != nil {
+                panic(err)
+        }
+        defer mgd.Close()
+
+        c := session.DB("test").C("people")
+        err = c.Insert(&Person{"Ale", "+55 53 8116 9639"},
+	               &Person{"Cla", "+55 53 8402 8510"})
+        if err != nil {
+                log.Fatal(err)
+        }
 	})
 
 	log.Fatal(http.ListenAndServe(":3000", nil))

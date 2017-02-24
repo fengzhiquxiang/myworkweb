@@ -14,8 +14,6 @@ $("form:eq(0)").submit(function(){
     alert("search function is creating ... ");
 });
 
-$("form:eq(1)").submit(function(){
-    $.post("/submit_input_data", function(data, status){
-        alert("Data: " + data + "\nStatus: " + status);
-    });
-});
+// $("#inputdata").submit(function(){
+//         alert($("#inputid").val());
+// });
