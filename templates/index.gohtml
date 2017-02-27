@@ -16,7 +16,7 @@
 </head>
   <body>
     <table id="dg" title="My Users" class="easyui-datagrid" style="width:550px;height:250px"
-      url="get_users.php"
+      url="get_customs"
       toolbar="#toolbar"
       rownumbers="true" fitColumns="true" singleSelect="true">
       <thead>
@@ -40,15 +40,23 @@
     <div class="ftitle">User Information</div>
     <form id="fm" method="post" novalidate>
       <div class="fitem">
-        <label>First Name:</label>
-        <input name="firstname" class="easyui-textbox" required="true">
+        <label>ID:</label>
+        <input name="id" class="easyui-textbox" required="true">
       </div>
       <div class="fitem">
-        <label>Last Name:</label>
-        <input name="lastname" class="easyui-textbox" required="true">
+        <label>fullname:</label>
+        <input name="fullname" class="easyui-textbox" required="true">
       </div>
       <div class="fitem">
-        <label>Phone:</label>
+        <label>nickname:</label>
+        <input name="nickname" class="easyui-textbox">
+      </div>
+      <div class="fitem">
+        <label>address:</label>
+        <input name="address" class="easyui-textbox">
+      </div>
+      <div class="fitem">
+        <label>phone:</label>
         <input name="phone" class="easyui-textbox">
       </div>
       <div class="fitem">
