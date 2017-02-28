@@ -8,21 +8,29 @@
   <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">
   <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">
   <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css">
+
+  <script src="js/me.js"></script>
+  
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.min.js"></script>
   <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
   <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.edatagrid.js"></script>
   
-  <!-- <script src="js/me.js"></script> -->
 </head>
   <body>
-    <table id="dg" title="My Users" class="easyui-datagrid" style="width:550px;height:250px"
+
+    <button id="ajax">ajax test</button>
+
+
+    <table id="dg" title="My Customs" class="easyui-datagrid" style="width:650px;height:350px"
       url="get_customs"
       toolbar="#toolbar"
       rownumbers="true" fitColumns="true" singleSelect="true">
       <thead>
           <tr>
-              <th field="firstname" width="50">First Name</th>
-              <th field="lastname" width="50">Last Name</th>
+              <th field="cid" width="50">CID</th>
+              <th field="fullname" width="50">fullname</th>
+              <th field="nickname" width="50">nickname</th>
+              <th field="address" width="150">address</th>
               <th field="phone" width="50">Phone</th>
               <th field="email" width="50">Email</th>
           </tr>
@@ -35,13 +43,13 @@
     </div>
   
   
-  <div id="dlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
+  <div id="dlg" class="easyui-dialog" style="width:400px;height:320px;padding:10px 20px"
       closed="true" buttons="#dlg-buttons">
-    <div class="ftitle">User Information</div>
+    <div class="ftitle">Custom Information</div>
     <form id="fm" method="post" novalidate>
       <div class="fitem">
         <label>ID:</label>
-        <input name="id" class="easyui-textbox" required="true">
+        <input name="cid" class="easyui-textbox" required="true">
       </div>
       <div class="fitem">
         <label>fullname:</label>
@@ -72,7 +80,7 @@
   <script type="text/javascript">
     var url;
     function newUser(){
-      $('#dlg').dialog('open').dialog('setTitle','New User');
+      $('#dlg').dialog('open').dialog('setTitle','New Custom');
       $('#fm').form('clear');
       url = 'add_custom';
     }
