@@ -5,20 +5,26 @@
   <meta name="keywords" content="jquery,ui,easy,easyui,web">
   <meta name="description" content="easyui help you build your web page easily!">
   <title>Build CRUD DataGrid</title>
-  <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">
+  <!-- <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">
   <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">
-  <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css">
+  <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css"> -->
 
-  <script src="js/me.js"></script>
+  <link rel="stylesheet" type="text/css" href="jquery-easyui-1.5.1/themes/default/easyui.css">
+  <link rel="stylesheet" type="text/css" href="jquery-easyui-1.5.1/themes/icon.css">
+  <link rel="stylesheet" type="text/css" href="jquery-easyui-1.5.1//demo/demo.css">
 
-  <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.min.js"></script>
-  <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
-  <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.edatagrid.js"></script>
+  <!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.min.js"></script> -->
+  <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript" src="js/me.js"></script>
+  <!-- <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script> -->
+  <script type="text/javascript" src="jquery-easyui-1.5.1/jquery.easyui.min.js"></script>
+  <!-- <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.edatagrid.js"></script> -->
+  <script type="text/javascript" src="jquery-easyui-1.5.1/jquery.edatagrid.min.js"></script>
   
 </head>
   <body>
 
-    <button id="ajax">ajax test</button>
+    <button onclick="ajaxtest()">ajax test</button>
 
 
     <table id="dg" title="My Customs" class="easyui-datagrid" style="width:650px;height:350px"
@@ -28,11 +34,11 @@
       <thead>
           <tr>
               <th field="cid" width="50">CID</th>
-              <th field="fullname" width="50">fullname</th>
-              <th field="nickname" width="50">nickname</th>
-              <th field="address" width="150">address</th>
+              <th field="fullname" width="100">Fullname</th>
+              <th field="nickname" width="70">Nickname</th>
+              <th field="address" width="150">Address</th>
               <th field="phone" width="50">Phone</th>
-              <th field="email" width="50">Email</th>
+              <th field="email" width="100">Email</th>
           </tr>
       </thead>
     </table>
@@ -48,23 +54,23 @@
     <div class="ftitle">Custom Information</div>
     <form id="fm" method="post" novalidate>
       <div class="fitem">
-        <label>ID:</label>
+        <label>CID:</label>
         <input name="cid" class="easyui-textbox" required="true">
       </div>
       <div class="fitem">
-        <label>fullname:</label>
+        <label>Fullname:</label>
         <input name="fullname" class="easyui-textbox" required="true">
       </div>
       <div class="fitem">
-        <label>nickname:</label>
+        <label>Nickname:</label>
         <input name="nickname" class="easyui-textbox">
       </div>
       <div class="fitem">
-        <label>address:</label>
+        <label>Address:</label>
         <input name="address" class="easyui-textbox">
       </div>
       <div class="fitem">
-        <label>phone:</label>
+        <label>Phone:</label>
         <input name="phone" class="easyui-textbox">
       </div>
       <div class="fitem">
@@ -87,9 +93,9 @@
     function editUser(){
       var row = $('#dg').datagrid('getSelected');
       if (row){
-        $('#dlg').dialog('open').dialog('setTitle','Edit User');
+        $('#dlg').dialog('open').dialog('setTitle','Edit Custom');
         $('#fm').form('load',row);
-        url = 'update_user.php?id='+row.id;
+        url = 'update_custom?ocid='+row.cid;
       }
     }
     function saveUser(){
