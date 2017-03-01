@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css">
 
   <script src="js/me.js"></script>
-  
+
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.min.js"></script>
   <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
   <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.edatagrid.js"></script>
@@ -117,7 +117,7 @@
       if (row){
         $.messager.confirm('Confirm','Are you sure you want to destroy this user?',function(r){
           if (r){
-            $.post('destroy_user.php',{id:row.id},function(result){
+            $.post('delete_custom',{cid:row.cid},function(result){
               if (result.success){
                 $('#dg').datagrid('reload');  // reload the user data
               } else {

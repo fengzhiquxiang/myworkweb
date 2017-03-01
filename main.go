@@ -90,24 +90,24 @@ func main() {
         if err != nil {
                 log.Fatal(err)
         }
-		// w.WriteHeader(http.StatusOK) // 200
+
+        //give result to ajax success function receive then it refresh block
+        results := make(map[string]int)
+    	results["errorMsg"] = 0
+
+		js, err := json.Marshal(results)
+		if err != nil {
+		  http.Error(w, err.Error(), http.StatusInternalServerError)
+		  return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
 	})
 
 	http.HandleFunc("/delete_custom", func(w http.ResponseWriter, r *http.Request) {
-		// tpl.ExecuteTemplate(w, "index.gohtml", "jquery ajax data back!!")
 		cid := r.FormValue("cid")
-		fullname := r.FormValue("fullname")
-		nickname := r.FormValue("nickname")
-		address := r.FormValue("address")
-		phone := r.FormValue("phone")
-		email := r.FormValue("email")
-
-		fmt.Println(cid)
-		fmt.Println(fullname)
-		fmt.Println(nickname)
-		fmt.Println(address)
-		fmt.Println(phone)
-		fmt.Println(email)
+		fmt.Println(cid) 
 
 		// Connect to our local mongo
 		session, err := mgo.Dial("mongodb://localhost")
@@ -116,11 +116,23 @@ func main() {
 	    }
 	    defer session.Close()
 	    c := session.DB("mywebdb").C("customs")
-        err = c.Insert(&Custom{cid, fullname,nickname,address,phone,email})
+        err = c.Remove(bson.M{"cid":cid})
         if err != nil {
                 log.Fatal(err)
         }
-		// w.WriteHeader(http.StatusOK) // 200
+
+        results := make(map[string]int)
+    	results["success"] = 200
+
+		js, err := json.Marshal(results)
+		if err != nil {
+		  http.Error(w, err.Error(), http.StatusInternalServerError)
+		  return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+		fmt.Println(w)
 	})
 
 	http.HandleFunc("/ajax", func(w http.ResponseWriter, r *http.Request) {
