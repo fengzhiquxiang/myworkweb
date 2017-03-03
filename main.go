@@ -54,7 +54,7 @@ func main() {
 	    c := session.DB("mywebdb").C("customs")
     	var results []Custom
         // err = c.Find(bson.M{}).All(&results)
-        err = c.Find(nil).All(&results)
+        err = c.Find(nil).Sort("cid").All(&results)
         if err != nil {
                 log.Fatal(err)
         }

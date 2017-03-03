@@ -26,26 +26,34 @@
 
     <button onclick="ajaxtest()">ajax test</button>
 
+    <input id="ss" class="easyui-searchbox" style="width:300px"
+            data-options="searcher:qq,prompt:'Please Input Value',menu:'#mm'"></input>
+            
+    <div id="mm" style="width:120px">
+        <div data-options="name:'all',iconCls:'icon-ok'">All News</div>
+        <div data-options="name:'sports'">Sports News</div>
+    </div>
 
-    <table id="dg" title="My Customs" class="easyui-datagrid" style="width:650px;height:350px"
+
+    <table id="dg" title="My Customs" class="easyui-datagrid" style="width:850px;height:350px"
       url="get_customs"
       toolbar="#toolbar"
-      rownumbers="true" fitColumns="true" singleSelect="true">
+      rownumbers="false" fitColumns="true" pagination="true" singleSelect="true">
       <thead>
           <tr>
-              <th field="cid" width="50">CID</th>
-              <th field="fullname" width="100">Fullname</th>
-              <th field="nickname" width="70">Nickname</th>
-              <th field="address" width="150">Address</th>
-              <th field="phone" width="50">Phone</th>
-              <th field="email" width="100">Email</th>
+              <th field="cid" width="40" align="center">CID</th>
+              <th field="fullname" width="200" resizable="true">Fullname</th>
+              <th field="nickname" width="70" resizable="true">Nickname</th>
+              <th field="address" width="300" resizable="true">Address</th>
+              <th field="phone" width="100" resizable="true">Phone</th>
+              <th field="email" width="100" resizable="true">Email</th>
           </tr>
       </thead>
     </table>
     <div id="toolbar">
-        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">New User</a>
-        <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Edit User</a>
-        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyUser()">Remove User</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">New Custom</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Edit Custom</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyUser()">Remove Custom</a>
     </div>
   
   
@@ -84,6 +92,11 @@
     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">Cancel</a>
   </div>
   <script type="text/javascript">
+
+    function qq(value,name){
+        alert(value+":"+name)
+    }
+
     var url;
     function newUser(){
       $('#dlg').dialog('open').dialog('setTitle','New Custom');
