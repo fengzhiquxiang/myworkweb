@@ -41,7 +41,7 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		tpl.ExecuteTemplate(w, "index.gohtml", nil)
 	})
-
+	var sw string;
 	http.HandleFunc("/get_customs", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.RequestURI)
 
@@ -53,11 +53,29 @@ func main() {
 	    defer session.Close()
 	    c := session.DB("mywebdb").C("customs")
     	var results []Custom
-        // err = c.Find(bson.M{}).All(&results)
-        err = c.Find(nil).Sort("cid").All(&results)
-        if err != nil {
-                log.Fatal(err)
-        }
+    	if sw == "" {
+    		sw = r.FormValue("name")
+    	}
+    	switch{
+	    	case sw != "" :
+			    index := mgo.Index{
+			      Key: []string{"$text:cid", "$text:fullname", "$text:nickname", "$text:address", "$text:phone", "$text:email"},
+			    }
+
+		    	err = c.EnsureIndex(index)
+		        if err != nil {
+		                log.Fatal(err)
+		        }
+		        // err = c.Find(bson.M{}).All(&results)
+		        // c.Find(bson.M{"$text": bson.M{"$search": "efg"}})
+		        err = c.Find(bson.M{"$text": bson.M{"$search": sw}}).Sort("cid").All(&results)
+	    	case sw == "" :
+		        // err = c.Find(bson.M{}).All(&results)
+		        err = c.Find(nil).Sort("cid").All(&results)
+		        if err != nil {
+		                log.Fatal(err)
+		        }
+		}
         fmt.Println(results)
 		// if err = json.NewEncoder(w).Encode(results); err != nil {
 		// 	log.Fatal(err)
@@ -189,6 +207,48 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 		fmt.Println(w)
+	})
+
+	http.HandleFunc("/get_search_customs", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.RequestURI)
+		sw := r.FormValue("name")
+		fmt.Println(sw) 
+
+		// Connect to our local mongo
+		session, err := mgo.Dial("mongodb://localhost")
+		if err != nil {
+	            panic(err)
+	    }
+	    defer session.Close()
+	    c := session.DB("mywebdb").C("customs")
+    	var results []Custom
+
+	    index := mgo.Index{
+	      Key: []string{"$text:cid", "$text:fullname", "$text:nickname", "$text:address", "$text:phone", "$text:email"},
+	    }
+
+    	err = c.EnsureIndex(index)
+        if err != nil {
+                log.Fatal(err)
+        }
+        // err = c.Find(bson.M{}).All(&results)
+        // c.Find(bson.M{"$text": bson.M{"$search": "efg"}})
+        err = c.Find(bson.M{"$text": bson.M{"$search": sw}}).Sort("cid").All(&results)
+        if err != nil {
+                log.Fatal(err)
+        }
+        fmt.Println(results)
+		// if err = json.NewEncoder(w).Encode(results); err != nil {
+		// 	log.Fatal(err)
+		// }
+		js, err := json.Marshal(results)
+		if err != nil {
+		  http.Error(w, err.Error(), http.StatusInternalServerError)
+		  return
+		}
+        // fmt.Println(js)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
 	})
 
 	http.HandleFunc("/ajax", func(w http.ResponseWriter, r *http.Request) {

@@ -27,10 +27,10 @@
     <button onclick="ajaxtest()">ajax test</button>
 
     <input id="ss" class="easyui-searchbox" style="width:300px"
-            data-options="searcher:qq,prompt:'Please Input Value',menu:'#mm'"></input>
+            data-options="searcher:qq,prompt:'Please Input Value',menu:'#mm',height:30 "></input>
             
     <div id="mm" style="width:120px">
-        <div data-options="name:'all',iconCls:'icon-ok'">All News</div>
+        <div data-options="name:'all',iconCls:'icon-ok'">All Customs</div>
         <div data-options="name:'sports'">Sports News</div>
     </div>
 
@@ -94,7 +94,17 @@
   <script type="text/javascript">
 
     function qq(value,name){
-        alert(value+":"+name)
+        alert(value+":"+name);
+        $.post('get_customs',{name:value},function(result){
+          // if (result.success){
+            $('#dg').datagrid('reload');  // reload the user data
+          // } else {
+        //     $.messager.show({ // show error message
+        //       title: 'Error',
+        //       msg: result.errorMsg
+        //     });
+        //   }
+        },'json');
     }
 
     var url;
