@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"encoding/json"
+	// "regexp"
     // "io/ioutil"
 
 	"gopkg.in/mgo.v2"
@@ -41,7 +42,7 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		tpl.ExecuteTemplate(w, "index.gohtml", nil)
 	})
-	var sw string;
+
 	http.HandleFunc("/get_customs", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.RequestURI)
 
@@ -53,29 +54,11 @@ func main() {
 	    defer session.Close()
 	    c := session.DB("mywebdb").C("customs")
     	var results []Custom
-    	if sw == "" {
-    		sw = r.FormValue("name")
-    	}
-    	switch{
-	    	case sw != "" :
-			    index := mgo.Index{
-			      Key: []string{"$text:cid", "$text:fullname", "$text:nickname", "$text:address", "$text:phone", "$text:email"},
-			    }
-
-		    	err = c.EnsureIndex(index)
-		        if err != nil {
-		                log.Fatal(err)
-		        }
-		        // err = c.Find(bson.M{}).All(&results)
-		        // c.Find(bson.M{"$text": bson.M{"$search": "efg"}})
-		        err = c.Find(bson.M{"$text": bson.M{"$search": sw}}).Sort("cid").All(&results)
-	    	case sw == "" :
-		        // err = c.Find(bson.M{}).All(&results)
-		        err = c.Find(nil).Sort("cid").All(&results)
-		        if err != nil {
-		                log.Fatal(err)
-		        }
-		}
+        // err = c.Find(bson.M{}).All(&results)
+        err = c.Find(nil).Sort("cid").All(&results)
+        if err != nil {
+                log.Fatal(err)
+        }
         fmt.Println(results)
 		// if err = json.NewEncoder(w).Encode(results); err != nil {
 		// 	log.Fatal(err)
@@ -211,9 +194,11 @@ func main() {
 
 	http.HandleFunc("/get_search_customs", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.RequestURI)
-		sw := r.FormValue("name")
+		var sw string = r.FormValue("search_word")
 		fmt.Println(sw) 
-
+		if sw == "" {
+			return
+		}
 		// Connect to our local mongo
 		session, err := mgo.Dial("mongodb://localhost")
 		if err != nil {
@@ -231,9 +216,14 @@ func main() {
         if err != nil {
                 log.Fatal(err)
         }
-        // err = c.Find(bson.M{}).All(&results)
-        // c.Find(bson.M{"$text": bson.M{"$search": "efg"}})
-        err = c.Find(bson.M{"$text": bson.M{"$search": sw}}).Sort("cid").All(&results)
+        // sw = "/.*" + sw + ".*/"
+        sw = "^" + sw 
+		fmt.Println(sw) 
+        // err = c.Find(bson.M{"$text": bson.M{"$search": sw}}).Sort("cid").All(&results)
+        // err = c.Find(bson.M{"$text": bson.RegEx{regexp.QuoteMeta(sw), ""}}).Sort("cid").All(&results)
+        // err = c.Find({$text: { $regex: /2/, $options: 'im' }}).Sort("cid").All(&results)
+        err = c.Find(bson.M{"phone": bson.M{"$regex": bson.RegEx{sw, ""}}}).Sort("cid").All(&results)
+        // err = c.Find(bson.M{"$text": bson.M{"$search": bson.M{"$regex": bson.RegEx{sw, "m"}}}}).Sort("cid").All(&results)
         if err != nil {
                 log.Fatal(err)
         }

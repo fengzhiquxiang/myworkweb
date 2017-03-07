@@ -92,19 +92,10 @@
     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">Cancel</a>
   </div>
   <script type="text/javascript">
-
     function qq(value,name){
-        alert(value+":"+name);
-        $.post('get_customs',{name:value},function(result){
-          // if (result.success){
-            $('#dg').datagrid('reload');  // reload the user data
-          // } else {
-        //     $.messager.show({ // show error message
-        //       title: 'Error',
-        //       msg: result.errorMsg
-        //     });
-        //   }
-        },'json');
+      $.post('get_search_customs',{"search_word":value},function(result){
+        $('#dg').datagrid('loadData',result);
+      });
     }
 
     var url;
