@@ -194,51 +194,12 @@ func main() {
 
 	http.HandleFunc("/get_search_customs", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.RequestURI)
-		var sw string = r.FormValue("search_word")
-		fmt.Println(sw) 
-		if sw == "" {
-			return
+		col := r.FormValue("col")
+		val := r.FormValue("val")
+		fmt.Println(col,val)
+		if val != "" {
+			search_customs(w,col,val)
 		}
-		// Connect to our local mongo
-		session, err := mgo.Dial("mongodb://localhost")
-		if err != nil {
-	            panic(err)
-	    }
-	    defer session.Close()
-	    c := session.DB("mywebdb").C("customs")
-    	var results []Custom
-
-	    index := mgo.Index{
-	      Key: []string{"$text:cid", "$text:fullname", "$text:nickname", "$text:address", "$text:phone", "$text:email"},
-	    }
-
-    	err = c.EnsureIndex(index)
-        if err != nil {
-                log.Fatal(err)
-        }
-        // sw = "/.*" + sw + ".*/"
-        sw = "^" + sw 
-		fmt.Println(sw) 
-        // err = c.Find(bson.M{"$text": bson.M{"$search": sw}}).Sort("cid").All(&results)
-        // err = c.Find(bson.M{"$text": bson.RegEx{regexp.QuoteMeta(sw), ""}}).Sort("cid").All(&results)
-        // err = c.Find({$text: { $regex: /2/, $options: 'im' }}).Sort("cid").All(&results)
-        err = c.Find(bson.M{"phone": bson.M{"$regex": bson.RegEx{sw, ""}}}).Sort("cid").All(&results)
-        // err = c.Find(bson.M{"$text": bson.M{"$search": bson.M{"$regex": bson.RegEx{sw, "m"}}}}).Sort("cid").All(&results)
-        if err != nil {
-                log.Fatal(err)
-        }
-        fmt.Println(results)
-		// if err = json.NewEncoder(w).Encode(results); err != nil {
-		// 	log.Fatal(err)
-		// }
-		js, err := json.Marshal(results)
-		if err != nil {
-		  http.Error(w, err.Error(), http.StatusInternalServerError)
-		  return
-		}
-        // fmt.Println(js)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
 	})
 
 	http.HandleFunc("/ajax", func(w http.ResponseWriter, r *http.Request) {
@@ -262,4 +223,32 @@ func main() {
 	})
 
 	log.Fatal(http.ListenAndServe(":3000", nil))
+}
+
+
+func search_customs(w http.ResponseWriter,swname string, swvalue string) {
+	fmt.Println(swvalue)
+	// Connect to our local mongo
+	session, err := mgo.Dial("mongodb://localhost")
+	if err != nil {
+            panic(err)
+    }
+    defer session.Close()
+    c := session.DB("mywebdb").C("customs")
+	var results []Custom
+    //regex
+    swvalue = ".*" + swvalue +".*"
+	fmt.Println(swvalue) 
+    err = c.Find(bson.M{swname: bson.RegEx{swvalue, "im"}}).Sort("cid").All(&results)
+    if err != nil {
+            log.Fatal(err)
+    }
+    fmt.Println(results)
+	js, err := json.Marshal(results)
+	if err != nil {
+	  http.Error(w, err.Error(), http.StatusInternalServerError)
+	  return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
 }

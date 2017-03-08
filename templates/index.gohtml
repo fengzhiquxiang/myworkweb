@@ -30,8 +30,9 @@
             data-options="searcher:qq,prompt:'Please Input Value',menu:'#mm',height:30 "></input>
             
     <div id="mm" style="width:120px">
-        <div data-options="name:'all',iconCls:'icon-ok'">All Customs</div>
-        <div data-options="name:'sports'">Sports News</div>
+        <div data-options="name:'fullname',iconCls:'icon-ok'">Full Name</div>
+        <div data-options="name:'nickname'">Nick Name</div>
+        <div data-options="name:'address'">Address</div>
     </div>
 
 
@@ -93,7 +94,8 @@
   </div>
   <script type="text/javascript">
     function qq(value,name){
-      $.post('get_search_customs',{"search_word":value},function(result){
+      alert(name+":"+value);
+      $.post('get_search_customs',{"col":name,"val":value},function(result){
         $('#dg').datagrid('loadData',result);
       });
     }
