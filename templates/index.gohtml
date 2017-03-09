@@ -36,7 +36,7 @@
     </div>
 
 
-    <table id="dg" title="My Customs" class="easyui-datagrid" style="width:850px;height:350px"
+    <table id="dg" title="My Customs" class="easyui-datagrid" style="width:850px;height:380px"
       url="get_customs"
       toolbar="#toolbar"
       rownumbers="false" fitColumns="true" pagination="true" singleSelect="true">
@@ -93,8 +93,30 @@
     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">Cancel</a>
   </div>
   <script type="text/javascript">
+    $(function(){
+      var pager = $('#dg').datagrid().datagrid('getPager');    // get the pager of datagrid
+      pager.pagination({
+          buttons:[{
+              iconCls:'icon-search',
+              handler:function(){
+                  alert('search');
+              }
+          },{
+              iconCls:'icon-add',
+              handler:function(){
+                  newUser();
+              }
+          },{
+              iconCls:'icon-edit',
+              handler:function(){
+                  editUser();
+              }
+          }]
+      });            
+  })
+
+  
     function qq(value,name){
-      alert(name+":"+value);
       $.post('get_search_customs',{"col":name,"val":value},function(result){
         $('#dg').datagrid('loadData',result);
       });

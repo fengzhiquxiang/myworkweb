@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"encoding/json"
+	"strconv"
 	// "regexp"
     // "io/ioutil"
 
@@ -15,7 +16,7 @@ import (
 )
 
 type Custom struct {
-	Cid         string        `bson:"cid" json:"cid"`
+	Cid         int        `bson:"cid" json:"cid"`
 	Fullname    string        `bson:"fullname" json:"fullname"`
 	Nickname    string        `bson:"nickname" json:"nickname"`
 	Address     string        `bson:"address" json:"address"`
@@ -75,7 +76,11 @@ func main() {
 
 	http.HandleFunc("/add_custom", func(w http.ResponseWriter, r *http.Request) {
 		// tpl.ExecuteTemplate(w, "index.gohtml", "jquery ajax data back!!")
-		cid := r.FormValue("cid")
+		scid := r.FormValue("cid")
+		cid, err := strconv.Atoi(scid)
+		if err != nil {
+	            panic(err)
+	    }
 		fullname := r.FormValue("fullname")
 		nickname := r.FormValue("nickname")
 		address := r.FormValue("address")
@@ -118,11 +123,14 @@ func main() {
 
 	http.HandleFunc("/update_custom", func(w http.ResponseWriter, r *http.Request) {
 		// tpl.ExecuteTemplate(w, "index.gohtml", "jquery ajax data back!!")
+
 		ocid := r.FormValue("ocid")
+		cid, err := strconv.Atoi(ocid)
+		if err != nil {
+	            panic(err)
+	    }
+		fmt.Println(cid)
 
-		fmt.Println(ocid)
-
-		cid := r.FormValue("cid")
 		fullname := r.FormValue("fullname")
 		nickname := r.FormValue("nickname")
 		address := r.FormValue("address")
@@ -143,8 +151,9 @@ func main() {
 	    }
 	    defer session.Close()
 	    c := session.DB("mywebdb").C("customs")
-        err = c.Update(bson.M{"cid":ocid},bson.M{"cid":cid, "fullname":fullname,"nickname":nickname,"address":address,"phone":phone,"email":email})
+        err = c.Update(bson.M{"cid":cid},bson.M{"cid":cid, "fullname":fullname,"nickname":nickname,"address":address,"phone":phone,"email":email})
         if err != nil {
+        		fmt.Println("update customs error!!!!!!!!!")
                 log.Fatal(err)
         }
 
