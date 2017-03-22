@@ -44,6 +44,37 @@ func main() {
 		tpl.ExecuteTemplate(w, "index.gohtml", nil)
 	})
 
+	http.HandleFunc("/get_customs_count", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.RequestURI)
+
+		// // Connect to our local mongo
+		// session, err := mgo.Dial("mongodb://localhost")
+		// if err != nil {
+	 //            panic(err)
+	 //    }
+	 //    defer session.Close()
+	 //    c := session.DB("mywebdb").C("customs")
+  //   	var results []Custom
+  //       // err = c.Find(bson.M{}).All(&results)
+  //       err = c.Find(nil).Sort("cid").All(&results)
+  //       if err != nil {
+  //               log.Fatal(err)
+  //       }
+
+        //give result to ajax success function receive then it refresh block
+        results := make(map[string]int)
+    	results["count"] = 100
+
+		js, err := json.Marshal(results)
+		if err != nil {
+		  http.Error(w, err.Error(), http.StatusInternalServerError)
+		  return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	})
+
 	http.HandleFunc("/get_customs", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.RequestURI)
 

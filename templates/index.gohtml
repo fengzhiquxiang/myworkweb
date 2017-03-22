@@ -94,8 +94,16 @@
   </div>
   <script type="text/javascript">
     $(function(){
+      //get the count of rows form server
+      var count;
+      $.post('get_customs_count',function(result){
+        alert(result.count);
+        count = result.count;
+      });
+
       var pager = $('#dg').datagrid().datagrid('getPager');    // get the pager of datagrid
       pager.pagination({
+          total:count,
           buttons:[{
               iconCls:'icon-search',
               handler:function(){
