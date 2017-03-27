@@ -47,23 +47,22 @@ func main() {
 	http.HandleFunc("/get_customs_count", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.RequestURI)
 
-		// // Connect to our local mongo
-		// session, err := mgo.Dial("mongodb://localhost")
-		// if err != nil {
-	 //            panic(err)
-	 //    }
-	 //    defer session.Close()
-	 //    c := session.DB("mywebdb").C("customs")
-  //   	var results []Custom
-  //       // err = c.Find(bson.M{}).All(&results)
-  //       err = c.Find(nil).Sort("cid").All(&results)
-  //       if err != nil {
-  //               log.Fatal(err)
-  //       }
+		// Connect to our local mongo
+		session, err := mgo.Dial("mongodb://localhost")
+		if err != nil {
+	            panic(err)
+	    }
+	    defer session.Close()
+	    c := session.DB("mywebdb").C("customs")
+    	var count int;
+        count, err = c.Count()
+        if err != nil {
+                log.Fatal(err)
+        }
 
         //give result to ajax success function receive then it refresh block
         results := make(map[string]int)
-    	results["count"] = 100
+    	results["count"] = count
 
 		js, err := json.Marshal(results)
 		if err != nil {
@@ -203,7 +202,11 @@ func main() {
 	})
 
 	http.HandleFunc("/delete_custom", func(w http.ResponseWriter, r *http.Request) {
-		cid := r.FormValue("cid")
+		scid := r.FormValue("cid")
+		cid, err := strconv.Atoi(scid)
+		if err != nil {
+	            panic(err)
+	    }
 		fmt.Println(cid) 
 
 		// Connect to our local mongo
@@ -215,7 +218,7 @@ func main() {
 	    c := session.DB("mywebdb").C("customs")
         err = c.Remove(bson.M{"cid":cid})
         if err != nil {
-                log.Fatal(err)
+                log.Fatal("/delete_custom  ",err)
         }
 
         results := make(map[string]int)

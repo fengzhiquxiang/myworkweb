@@ -92,38 +92,48 @@
     <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="saveUser()" style="width:90px">Save</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">Cancel</a>
   </div>
+
+  <p id="testp" style="background:red"></p>
+  <p id="testp1" style="background:yellow"></p>
+
   <script type="text/javascript">
     $(function(){
       //get the count of rows form server
       var count;
       $.post('get_customs_count',function(result){
-        alert(result.count);
         count = result.count;
+        $( "#testp" ).text( "" + count );
       });
 
       var pager = $('#dg').datagrid().datagrid('getPager');    // get the pager of datagrid
       pager.pagination({
-          total:count,
-          buttons:[{
-              iconCls:'icon-search',
-              handler:function(){
-                  alert('search');
-              }
-          },{
-              iconCls:'icon-add',
-              handler:function(){
-                  newUser();
-              }
-          },{
-              iconCls:'icon-edit',
-              handler:function(){
-                  editUser();
-              }
-          }]
-      });            
-  })
+        total:100,
+        buttons:[{
+            iconCls:'icon-add',
+            handler:function(){
+                newUser();
+            }
+        },{
+            iconCls:'icon-edit',
+            handler:function(){
+                editUser();
+            }
+        }]
+      }); 
 
-  
+      var optionpp = pager.pagination('options');   
+      // $( "#testp1" ).text( "" + optionpp );
+      // var items = [];
+      $.each( optionpp, function( key0, val0 ) {
+        // items.push(key0 + ":" + val0);
+        $( "#testp1" ).append(key0+ "::" + val0);
+        $.each( val0, function( key1, val1 ) {
+          $( "#testp1" ).append(key1 + "=" + val1);
+        });
+        // $( "#testp1" ).text(items.join(" " ));
+      });
+    })
+
     function qq(value,name){
       $.post('get_search_customs',{"col":name,"val":value},function(result){
         $('#dg').datagrid('loadData',result);
