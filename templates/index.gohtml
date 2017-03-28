@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="keywords" content="jquery,ui,easy,easyui,web">
   <meta name="description" content="easyui help you build your web page easily!">
-  <title>Build CRUD DataGrid</title>
+  <title>My Works Flow</title>
   <!-- <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/default/easyui.css">
   <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/themes/icon.css">
   <link rel="stylesheet" type="text/css" href="http://www.jeasyui.com/easyui/demo/demo.css"> -->
@@ -35,28 +35,13 @@
         <div data-options="name:'address'">Address</div>
     </div>
 
+    <table id="dg"></table>
 
-    <table id="dg" title="My Customs" class="easyui-datagrid" style="width:850px;height:380px"
-      url="get_customs"
-      toolbar="#toolbar"
-      rownumbers="false" fitColumns="true" pagination="true" singleSelect="true">
-      <thead>
-          <tr>
-              <th field="cid" width="40" align="center">CID</th>
-              <th field="fullname" width="200" resizable="true">Fullname</th>
-              <th field="nickname" width="70" resizable="true">Nickname</th>
-              <th field="address" width="300" resizable="true">Address</th>
-              <th field="phone" width="100" resizable="true">Phone</th>
-              <th field="email" width="100" resizable="true">Email</th>
-          </tr>
-      </thead>
-    </table>
     <div id="toolbar">
         <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">New Custom</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Edit Custom</a>
         <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyUser()">Remove Custom</a>
     </div>
-  
   
   <div id="dlg" class="easyui-dialog" style="width:400px;height:320px;padding:10px 20px"
       closed="true" buttons="#dlg-buttons">
@@ -98,41 +83,103 @@
 
   <script type="text/javascript">
     $(function(){
+      var pagesz0;
+      var pageno0;
       //get the count of rows form server
-      var count;
+      var total0;
       $.post('get_customs_count',function(result){
-        count = result.count;
-        $( "#testp" ).text( "" + count );
-      });
+        total0 = result.count;
+        $("#testp").text(total0);
 
-      var pager = $('#dg').datagrid().datagrid('getPager');    // get the pager of datagrid
-      pager.pagination({
-        total:100,
-        buttons:[{
-            iconCls:'icon-add',
-            handler:function(){
-                newUser();
-            }
-        },{
-            iconCls:'icon-edit',
-            handler:function(){
-                editUser();
-            }
-        }]
-      }); 
+        $('#dg').datagrid({
+            // url: 'get_customs_pager',
+            // queryParams: {
+            //   pagesz: pagesz0,
+            //   pageno: pageno0
+            // },
+            columns:[[
+                {field:'cid',title:'CID',width:40},
+                {field:'fullname',title:'FullName'},
+                {field:'nickname',title:'NickName',align:'right'},
+                {field:'address',title:'Address',align:'right'},
+                {field:'phone',title:'Phone',width:100,align:'right'},
+                {field:'email',title:'Email',align:'right'}
+            ]],
+            pagination: true,
+            toolbar: '#toolbar'
+        });
+
+        var pager = $('#dg').datagrid().datagrid('getPager');    // get the pager of datagrid
+        pager.pagination({
+          total: total0,
+          // pageSize: 10,
+          // pageNumber: 1,
+          buttons:[{
+              iconCls:'icon-add',
+              handler:function(){
+                  newUser();
+              }
+          },{
+              iconCls:'icon-edit',
+              handler:function(){
+                  editUser();
+              }
+          }]
+        });
+
+        $.post('get_customs_pager',function(result){
+          $('#dg').datagrid('load', result);
+          // $('#dg').datagrid().datagrid({
+          //   data: result
+          // });
+        });
+    });
+
+
+      // $.post('get_customs_pager',function(result){
+      //   $.messager.progress('close');
+      //   $('#dg').datagrid('loadData', result);
+      //   // $('#dg').datagrid().datagrid({
+      //   //   data: result
+      //   // });
+      // });
+
+        // onSelectPage: function(pageNumber, pageSize){
+        //   $(this).pagination('loading');
+        //   alert('pageNumber:'+pageNumber+',pageSize:'+pageSize);
+        //   $(this).pagination('loaded');
+        //   pagesz0 = pageSize;
+        //   pageno0 = pageNumber;
+        // },
+        // displayMsg: 'Displaying {from} to {to} of {total} items'
+       
+
+      // pager.pagination('refresh',{
+      //   onSelectPage: function(pageNumber, pageSize){
+      //     pagesz0 = pageSize;
+      //     pageno0 = pageNumber;
+      //   }
+      // }); 
+
+      // getDataForPager(pageno0,pagesz0);
+      //pager.pagination('refresh'); // refresh the pager bar information
 
       var optionpp = pager.pagination('options');   
-      // $( "#testp1" ).text( "" + optionpp );
-      // var items = [];
       $.each( optionpp, function( key0, val0 ) {
-        // items.push(key0 + ":" + val0);
         $( "#testp1" ).append(key0+ "::" + val0);
         $.each( val0, function( key1, val1 ) {
           $( "#testp1" ).append(key1 + "=" + val1);
         });
-        // $( "#testp1" ).text(items.join(" " ));
       });
+
     })
+
+  function getDataForPager(pagen, pages) {
+    $.post('get_customs_pager',{"pageno":pagen,"pagesz":pages},function(result){
+      $.messager.progress('close'); 
+      $('#dgd').datagrid('loadData', result);
+    });  
+  };
 
     function qq(value,name){
       $.post('get_search_customs',{"col":name,"val":value},function(result){

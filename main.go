@@ -56,6 +56,7 @@ func main() {
 	    c := session.DB("mywebdb").C("customs")
     	var count int;
         count, err = c.Count()
+		fmt.Println("total:"+strconv.Itoa(count))
         if err != nil {
                 log.Fatal(err)
         }
@@ -90,7 +91,44 @@ func main() {
         if err != nil {
                 log.Fatal(err)
         }
-        fmt.Println(results)
+        fmt.Println("results")
+		// if err = json.NewEncoder(w).Encode(results); err != nil {
+		// 	log.Fatal(err)
+		// }
+		js, err := json.Marshal(results)
+		if err != nil {
+		  http.Error(w, err.Error(), http.StatusInternalServerError)
+		  return
+		}
+        // fmt.Println(js)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	})
+
+	http.HandleFunc("/get_customs_pager", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.RequestURI)
+
+		//pagesz
+		pagesz := r.FormValue("pagesz")
+		//pageno
+		pageno := r.FormValue("pageno")
+		fmt.Println("pagesz:"+pagesz)
+		fmt.Println("pageno:"+pageno)
+
+		// Connect to our local mongo
+		session, err := mgo.Dial("mongodb://localhost")
+		if err != nil {
+	            panic(err)
+	    }
+	    defer session.Close()
+	    c := session.DB("mywebdb").C("customs")
+    	var results []Custom
+        // err = c.Find(bson.M{}).All(&results)
+        err = c.Find(nil).Limit(10).Sort("cid").All(&results)
+        if err != nil {
+                log.Fatal(err)
+        }
+        fmt.Println("results")
 		// if err = json.NewEncoder(w).Encode(results); err != nil {
 		// 	log.Fatal(err)
 		// }
