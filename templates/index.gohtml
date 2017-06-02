@@ -14,7 +14,7 @@
   <link rel="stylesheet" type="text/css" href="jquery-easyui-1.5.1//demo/demo.css">
 
   <!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.min.js"></script> -->
-  <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="js/me.js"></script>
   <!-- <script type="text/javascript" src="http://www.jeasyui.com/easyui/jquery.easyui.min.js"></script> -->
   <script type="text/javascript" src="jquery-easyui-1.5.1/jquery.easyui.min.js"></script>
@@ -36,6 +36,8 @@
     </div>
 
     <table id="dg"></table>
+
+    <div id="pp" style="background:#efefef;border:1px solid #ccc;"></div>
 
     <div id="toolbar">
         <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">New Custom</a>
@@ -83,20 +85,8 @@
 
   <script type="text/javascript">
     $(function(){
-      var pagesz0;
-      var pageno0;
-      //get the count of rows form server
-      var total0;
-      $.post('get_customs_count',function(result){
-        total0 = result.count;
-        $("#testp").text(total0);
-
         $('#dg').datagrid({
-            // url: 'get_customs_pager',
-            // queryParams: {
-            //   pagesz: pagesz0,
-            //   pageno: pageno0
-            // },
+            //url: 'get_customs_pager',
             columns:[[
                 {field:'cid',title:'CID',width:40},
                 {field:'fullname',title:'FullName'},
@@ -105,81 +95,39 @@
                 {field:'phone',title:'Phone',width:100,align:'right'},
                 {field:'email',title:'Email',align:'right'}
             ]],
-            pagination: true,
             toolbar: '#toolbar'
         });
+        //count
+        $.ajax({
+          method: "POST",
+          url: "get_customs_count",
+          data: { name: "John", location: "Boston" }
+        })
+          .done(function( msg ) {
+            //pagination
+            $('#pp').pagination({
+                total:msg.count,
+                pageSize:10
+            });  
+            //show the first page
+            $.ajax({
+              method: "POST",
+              url: "get_customs_pager"
+            })
+              .done(function( msg ) {
+                alert( "Data: " + msg );
+                $('#dg').datagrid('loadData',msg);
+              });
+          });
 
-        var pager = $('#dg').datagrid().datagrid('getPager');    // get the pager of datagrid
-        pager.pagination({
-          total: total0,
-          // pageSize: 10,
-          // pageNumber: 1,
-          buttons:[{
-              iconCls:'icon-add',
-              handler:function(){
-                  newUser();
-              }
-          },{
-              iconCls:'icon-edit',
-              handler:function(){
-                  editUser();
-              }
-          }]
-        });
-
-        $.post('get_customs_pager',function(result){
-          $('#dg').datagrid('load', result);
-          // $('#dg').datagrid().datagrid({
-          //   data: result
-          // });
-        });
     });
-
-
-      // $.post('get_customs_pager',function(result){
-      //   $.messager.progress('close');
-      //   $('#dg').datagrid('loadData', result);
-      //   // $('#dg').datagrid().datagrid({
-      //   //   data: result
-      //   // });
-      // });
-
-        // onSelectPage: function(pageNumber, pageSize){
-        //   $(this).pagination('loading');
-        //   alert('pageNumber:'+pageNumber+',pageSize:'+pageSize);
-        //   $(this).pagination('loaded');
-        //   pagesz0 = pageSize;
-        //   pageno0 = pageNumber;
-        // },
-        // displayMsg: 'Displaying {from} to {to} of {total} items'
-       
-
-      // pager.pagination('refresh',{
-      //   onSelectPage: function(pageNumber, pageSize){
-      //     pagesz0 = pageSize;
-      //     pageno0 = pageNumber;
-      //   }
-      // }); 
-
-      // getDataForPager(pageno0,pagesz0);
-      //pager.pagination('refresh'); // refresh the pager bar information
-
-      var optionpp = pager.pagination('options');   
-      $.each( optionpp, function( key0, val0 ) {
-        $( "#testp1" ).append(key0+ "::" + val0);
-        $.each( val0, function( key1, val1 ) {
-          $( "#testp1" ).append(key1 + "=" + val1);
-        });
-      });
-
-    })
 
   function getDataForPager(pagen, pages) {
     $.post('get_customs_pager',{"pageno":pagen,"pagesz":pages},function(result){
       $.messager.progress('close'); 
       $('#dgd').datagrid('loadData', result);
     });  
-  };
+  }
 
     function qq(value,name){
       $.post('get_search_customs',{"col":name,"val":value},function(result){

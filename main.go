@@ -107,14 +107,6 @@ func main() {
 
 	http.HandleFunc("/get_customs_pager", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.RequestURI)
-
-		//pagesz
-		pagesz := r.FormValue("pagesz")
-		//pageno
-		pageno := r.FormValue("pageno")
-		fmt.Println("pagesz:"+pagesz)
-		fmt.Println("pageno:"+pageno)
-
 		// Connect to our local mongo
 		session, err := mgo.Dial("mongodb://localhost")
 		if err != nil {
@@ -124,7 +116,7 @@ func main() {
 	    c := session.DB("mywebdb").C("customs")
     	var results []Custom
         // err = c.Find(bson.M{}).All(&results)
-        err = c.Find(nil).Limit(10).Sort("cid").All(&results)
+        err = c.Find(nil).Skip(0).Limit(10).Sort("cid").All(&results)
         if err != nil {
                 log.Fatal(err)
         }
