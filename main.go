@@ -91,7 +91,7 @@ func main() {
         if err != nil {
                 log.Fatal(err)
         }
-        fmt.Println("results")
+        fmt.Println("results in datagrid")
 		// if err = json.NewEncoder(w).Encode(results); err != nil {
 		// 	log.Fatal(err)
 		// }
@@ -107,6 +107,19 @@ func main() {
 
 	http.HandleFunc("/get_customs_pager", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.RequestURI)
+		pn := r.FormValue("pn")
+		ps := r.FormValue("ps")
+
+		fmt.Println(pn)
+		fmt.Println(ps)
+		pni, err := strconv.Atoi(pn)
+		if err != nil {
+	            panic(err)
+	    }
+		psi, err := strconv.Atoi(ps)
+		if err != nil {
+	            panic(err)
+	    }
 		// Connect to our local mongo
 		session, err := mgo.Dial("mongodb://localhost")
 		if err != nil {
@@ -116,7 +129,7 @@ func main() {
 	    c := session.DB("mywebdb").C("customs")
     	var results []Custom
         // err = c.Find(bson.M{}).All(&results)
-        err = c.Find(nil).Skip(0).Limit(10).Sort("cid").All(&results)
+        err = c.Find(nil).Skip((pni-1)*psi).Limit(psi).Sort("cid").All(&results)
         if err != nil {
                 log.Fatal(err)
         }

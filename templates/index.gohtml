@@ -101,7 +101,7 @@
         $.ajax({
           method: "POST",
           url: "get_customs_count",
-          data: { name: "John", location: "Boston" }
+          // data: { name: "John", location: "Boston" }
         })
           .done(function( msg ) {
             //pagination
@@ -112,22 +112,32 @@
             //show the first page
             $.ajax({
               method: "POST",
-              url: "get_customs_pager"
+              url: "get_customs_pager",
+              data: { "pn": 1, "ps": 10 }
             })
               .done(function( msg ) {
-                alert( "Data: " + msg );
+                // alert( "Data: " + msg );
                 $('#dg').datagrid('loadData',msg);
               });
           });
 
-    });
+        $('#pp').pagination({
+          onSelectPage:function(pageNumber, pageSize){
+            // $(this).pagination('loading');
+            // alert('pageNumber:'+pageNumber+',pageSize:'+pageSize);
+            // $(this).pagination('loaded');
+            $.ajax({
+              method: "POST",
+              url: "get_customs_pager",
+              data: { "pn": pageNumber, "ps": pageSize }
+            })
+              .done(function( msg ) {
+                $('#dg').datagrid('loadData',msg);
+              });
+          }
+        });
 
-  function getDataForPager(pagen, pages) {
-    $.post('get_customs_pager',{"pageno":pagen,"pagesz":pages},function(result){
-      $.messager.progress('close'); 
-      $('#dgd').datagrid('loadData', result);
-    });  
-  }
+    });
 
     function qq(value,name){
       $.post('get_search_customs',{"col":name,"val":value},function(result){
